@@ -1,19 +1,20 @@
 import os
-import sys
 import pickle
+import sys
+
 from src.exception import CustomException
 from src.logger import logging
 
 from sklearn.model_selection import RandomizedSearchCV,StratifiedKFold
 from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
-
-def save_object(file_path,obj):
+def save_object(file_path, obj):
     try:
         os.makedirs(os.path.dirname(file_path),exist_ok=True)
 
         with open(file_path, 'wb') as file:
-            pickle.dump(obj, file)
+            pickle.dump(obj,file)
+            
     except Exception as e:
         raise CustomException(e,sys)
     
@@ -23,14 +24,16 @@ def evaluate_models(X_train, X_test, y_train, y_test, models, params):
         for model_name, model in models.items():
             param = params[model_name]
 
-            cv_splitter = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+            # Fewer CV splits to speed up search
+            cv_splitter = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
             gs = RandomizedSearchCV(
                 model,
                 param_distributions=param,
-                n_iter=30,
+                # Reduce iterations for faster tuning
+                n_iter=10,
                 scoring="balanced_accuracy",
                 cv=cv_splitter,
-                verbose=1,
+                verbose=0,
                 random_state=42,
                 n_jobs=-1
             )
@@ -49,8 +52,13 @@ def evaluate_models(X_train, X_test, y_train, y_test, models, params):
             train_bal_acc = balanced_accuracy_score(y_train, y_train_pred)
             test_bal_acc = balanced_accuracy_score(y_test, y_test_pred)
 
+            train_nor_acc = accuracy_score(y_train, y_train_pred)
+            test_nor_acc = accuracy_score(y_test, y_test_pred)
+
             print(f"{model_name} train balanced_accuracy: {train_bal_acc:.4f}")
             print(f"{model_name} test balanced_accuracy:  {test_bal_acc:.4f}")
+            print(f"{model_name} train normal accuracy_score: {train_nor_acc:.4f}")
+            print(f"{model_name} test normal accuracy_score:  {test_nor_acc:.4f}")
 
             report[model_name] = test_bal_acc
 

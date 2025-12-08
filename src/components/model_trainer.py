@@ -45,10 +45,10 @@ class ModelTrainer:
                 X_test = test_arr[:, :-1]
                 y_test = test_arr[:, -1]
 
+            # Focus on the fastest performant models
             models = {
-                LogisticRegression: LogisticRegression(max_iter=800, solver="saga"),
+                LogisticRegression: LogisticRegression(max_iter=400, solver="saga"),
                 LinearSVC: LinearSVC(dual=False),
-                RandomForestClassifier: RandomForestClassifier(n_estimators=200, n_jobs=-1),
             }
 
             params = {
@@ -60,11 +60,7 @@ class ModelTrainer:
                 LinearSVC: {
                     "C": [0.25, 0.5, 1, 2, 4],
                 },
-                RandomForestClassifier: {
-                    "n_estimators": [200, 300],
-                    "max_depth": [None, 20, 40],
-                    "max_features": ["sqrt", 0.5],
-                },
+                # Removed RandomForest to speed up training
             }
 
 

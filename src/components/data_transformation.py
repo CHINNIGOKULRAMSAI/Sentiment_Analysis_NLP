@@ -8,6 +8,7 @@ from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
 
+import nltk
 import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
@@ -15,6 +16,8 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import hstack
 
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 @dataclass
 class DataTransformationConfig:
@@ -25,12 +28,7 @@ class DataTransformation:
         self.data_transformation_config = DataTransformationConfig()
         self.stopwords = set(stopwords.words('english'))
         self.Lemmatizer = WordNetLemmatizer()
-        self.tf_idf = TfidfVectorizer(
-            max_features=3000,
-            ngram_range=(1,2),
-            min_df=2,
-            stop_words='english'
-        )
+        self.tf_idf = TfidfVectorizer(max_features=3000, ngram_range=(1,2), sublinear_tf=True)
 
     def _clean_text(self, text: str) -> str:
         if not isinstance(text, str):

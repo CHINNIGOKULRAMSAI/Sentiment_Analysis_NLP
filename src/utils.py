@@ -5,43 +5,53 @@ import sys
 from src.exception import CustomException
 from src.logger import logging
 
-from sklearn.model_selection import RandomizedSearchCV,StratifiedKFold
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from sklearn.metrics import accuracy_score, balanced_accuracy_score
+
 
 def save_object(file_path, obj):
     try:
-        os.makedirs(os.path.dirname(file_path),exist_ok=True)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        with open(file_path, 'wb') as file:
-            pickle.dump(obj,file)
-            
+        with open(file_path, "wb") as file:
+            pickle.dump(obj, file)
+
     except Exception as e:
-        raise CustomException(e,sys)
-    
+        raise CustomException(e, sys)
+
+
 def evaluate_models(X_train, X_test, y_train, y_test, models, params):
+    """
+    models: dict of {model_name: estimator_instance}
+    params: dict of {model_name: param_grid_dict}
+    """
     try:
         report = {}
+
         for model_name, model in models.items():
+            logging.info(f"Hyperparameter tuning for: {model_name}")
+
             param = params[model_name]
 
-            # Fewer CV splits to speed up search
             cv_splitter = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+
             gs = RandomizedSearchCV(
-                model,
+                estimator=model,
                 param_distributions=param,
-                # Reduce iterations for faster tuning
-                n_iter=10,
+                n_iter=30, 
                 scoring="balanced_accuracy",
-                cv=cv_splitter,
-                verbose=0,
+                cv=5,        
+                verbose=1,        
                 random_state=42,
-                n_jobs=-1
+                n_jobs=-1,
             )
 
             gs.fit(X_train, y_train)
 
-            print(f"Best parameters for {model_name}: {gs.best_params_}")
-            print(f"Best CV balanced_accuracy for {model_name}: {gs.best_score_}")
+            logging.info(f"Best parameters for {model_name}: {gs.best_params_}")
+            logging.info(
+                f"Best CV balanced_accuracy for {model_name}: {gs.best_score_}"
+            )
 
             model.set_params(**gs.best_params_)
             model.fit(X_train, y_train)
@@ -66,12 +76,12 @@ def evaluate_models(X_train, X_test, y_train, y_test, models, params):
 
     except Exception as e:
         raise CustomException(e, sys)
-    
+
+
 def load_object(file_path):
     try:
-
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             return pickle.load(file)
 
     except Exception as e:
-        raise CustomException(e,sys)
+        raise CustomException(e, sys)

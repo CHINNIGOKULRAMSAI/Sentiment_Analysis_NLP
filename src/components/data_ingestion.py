@@ -28,7 +28,8 @@ class DataIngestion:
             df = df.dropna(subset=['reviewText', 'rating'])
             df = df.drop_duplicates(subset=['reviewText', 'rating'])
             df['rating'] = df['rating'].astype(int)
-            df['label'] = df['rating'].apply(lambda x: 0 if x < 3 else 1)
+            df = df[df["rating"] != 3]
+            df["label"] = df["rating"].apply(lambda x: 0 if x <= 2 else 1)
 
             train_set, test_set = train_test_split(
                 df,

@@ -24,11 +24,16 @@ class PredictPipeline:
         
     def Predict(self, features):
         try:
-            if not isinstance(features, (list, tuple)):
-                features = [features]
+            if isinstance(features, (list, tuple)):
+                texts = list(features)
+            else:
+                texts = [features]
             
-            cleaned_features = [self.dt._clean_text(str(t) if t is not None else '' ) for t in features]
-
+            cleaned_features = [
+                self.dt._clean_text(str(t) if t is not None else "")
+                for t in texts
+            ]
+            
             data_scaled = self.preprocessor.transform(cleaned_features)
             preds = self.model.predict(data_scaled)
 

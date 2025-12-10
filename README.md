@@ -1,6 +1,14 @@
-# 🚀 **SENTIMENT ANALYSIS — NLP + FASTAPI + DOCKER + AZURE**
+# 🚀 **FAKE NEWS DETECTION — NLP + FASTAPI + DOCKER + AZURE**
 
-### A Production-Ready Sentiment Classifier deployed with Azure App Service
+### *A Production-Ready Fake News Classifier deployed with Azure App Service*
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Container-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Cloud-Azure-0089D6?style=for-the-badge&logo=microsoftazure&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Language-Python_3.10-blue?style=for-the-badge&logo=python"/>
+  <img src="https://img.shields.io/badge/Model-ML_NLP-success?style=for-the-badge"/>
+</p>
 
 ---
 

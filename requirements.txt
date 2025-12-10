@@ -3,5 +3,3 @@ pandas
 numpy
 nltk
 beautifulsoup4
-
-#-e .

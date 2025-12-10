@@ -7,12 +7,6 @@ from sklearn.model_selection import train_test_split
 from src.exception import CustomException
 from src.logger import logging
 
-from src.components.data_transformation import DataTransformation
-from src.components.data_transformation import DataTransformationConfig
-
-from src.components.model_trainer import ModelTrainer
-from src.components.model_trainer import ModelTrainerConfig
-
 
 @dataclass
 class DataIngestionConfig:
@@ -27,11 +21,12 @@ class DataIngestion:
         try:
             logging.info("Entered into data ingestion")
 
-            data = pd.read_csv("notebook/data/all_kindle_review.csv")
+            data = pd.read_csv("notebook/data/all_kindle_review.csv", index_col=0)
             df = data[['reviewText', 'rating']].copy()
 
             df['rating'] = pd.to_numeric(df['rating'], errors='coerce')
-            df = df.dropna(subset=['rating'])
+            df = df.dropna(subset=['reviewText', 'rating'])
+            df = df.drop_duplicates(subset=['reviewText', 'rating'])
             df['rating'] = df['rating'].astype(int)
             df['label'] = df['rating'].apply(lambda x: 0 if x < 3 else 1)
 
@@ -59,13 +54,3 @@ class DataIngestion:
         except Exception as e:
             raise CustomException(e,sys)
         
-
-if __name__ == '__main__':
-    DataIngestion = DataIngestion()
-    train_path, test_path = DataIngestion.initiate_data_ingestion()
-
-    DataTransformation = DataTransformation()
-    train_arr, test_arr = DataTransformation.initiate_data_transformation(train_path, test_path)
-
-    ModelTrainer = ModelTrainer()
-    ModelTrainer.initiate_model_trainer(train_arr,test_arr)
